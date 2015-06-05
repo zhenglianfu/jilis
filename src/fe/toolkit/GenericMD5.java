@@ -45,6 +45,6 @@ public class GenericMD5 {
 			buffReader.close();
 			return md5(sb.toString());
 		}
-		return "no such file";
+		return md5(String.valueOf(System.currentTimeMillis()));
 	}
 }
