@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Administrator 资源文件重命名
+ * @author Administrator 璧勬簮鏂囦欢閲嶅懡鍚�
  */
 public class ResourceRefactor {
 
@@ -100,7 +100,7 @@ public class ResourceRefactor {
 		String stamp = generateStamp(source);
 		if (resource.isWebSource()) {
 			src = addQuery(src, stamp);
-		} else {
+		} else if (resource.isExisted()) {
 			switch (this.renameType) {
 			case ResourceRefactor.REPLACE_FILENAME:
 				src = replaceName(src, resource, stamp);
@@ -115,7 +115,7 @@ public class ResourceRefactor {
 		}
 		return src;
 	}
-	// 末尾添加时间戳
+	// 鏈熬娣诲姞鏃堕棿鎴�
 	private String addQuery(String src, String stamp){
 		if (src.indexOf("?") == -1) {
 			src = src + "?" + stamp;
@@ -124,7 +124,7 @@ public class ResourceRefactor {
 		}
 		return src;
 	}
-	// 文件更名追加stamp
+	// 鏂囦欢鏇村悕杩藉姞stamp
 	private String appendFileName(String src, Resource resource, String stamp){
 		String name = resource.getFileName();
 		File   file = resource.getFile();
@@ -137,7 +137,7 @@ public class ResourceRefactor {
 				+ newFileName));
 		return src;
 	}
-	// 文件更名为stamp
+	// 鏂囦欢鏇村悕涓簊tamp
 	private String replaceName(String src, Resource resource, String stamp){
 		String name = resource.getFileName();
 		File   file = resource.getFile();

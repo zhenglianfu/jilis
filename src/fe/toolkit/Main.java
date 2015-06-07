@@ -121,13 +121,29 @@ public class Main {
 				scannerHtml(file, resourceMap);
 			} else if (isHTMLFile(file)) {
 				Map<String, Resource> resourceRefer = scannerReferResource(files[i]);
+				Map<String, Resource> filtedRefer   = new HashMap<String, Resource>();
+				for (String src : resourceRefer.keySet()) {
+					Resource resource = resourceRefer.get(src);
+					if (isExpectedResource(resource)) {
+						filtedRefer.put(src, resource);
+					}
+				}
 				// has resource reference
-				if (resourceRefer.size() > 0) {
-					resourceMap.put(file.getAbsolutePath(), resourceRefer);
+				if (filtedRefer.size() > 0) {
+					resourceMap.put(file.getAbsolutePath(), filtedRefer);
 				}
 			}
 		}
 		return resourceMap;
+	}
+	
+	private boolean isExpectedResource(Resource resource){
+		for (int i = 0; i < this.resourceTypes.length; i++) {
+			if (this.resourceTypes[i].equals(resource.getFileType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private Map<String, Resource> scannerReferResource(File html) throws IOException{

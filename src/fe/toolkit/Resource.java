@@ -16,6 +16,8 @@ public class Resource {
 	private String fileType;
 	
 	private boolean isWebSource;
+	
+	private boolean existed;
 
 	public Resource() {
 	}
@@ -42,6 +44,10 @@ public class Resource {
 	
 	public boolean isWebSource() {
 		return isWebSource;
+	}
+	
+	public boolean isExisted(){
+		return existed;
 	}
 
 	@Override
@@ -77,6 +83,11 @@ public class Resource {
 		resource.fileType    = absUri.substring(absUri.lastIndexOf(".") + 1);
 		resource.fileName    = absUri.substring(slashIndex + 1);
 		resource.isWebSource = absUri.toLowerCase().indexOf("http://") == 0;
+		if (resource.isWebSource) {
+			resource.existed = true;
+		} else {
+			resource.existed = resource.file.exists();
+		}
 		return resource;
 	}
 	

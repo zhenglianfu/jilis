@@ -22,15 +22,14 @@ public class HtmlScanner {
 	
 	private FileReader reader;
 	
+	private File html;
+	
 	private HtmlScanner() {}
 	
 	public static HtmlScanner getInstance(File html) throws FileNotFoundException {
-		return getInstance(new FileReader(html));
-	}
-	
-	public static HtmlScanner getInstance(FileReader html){
 		HtmlScanner htmlParser = new HtmlScanner();
-		htmlParser.reader = html;
+		htmlParser.reader = new FileReader(html);
+		htmlParser.html = html;
 		return htmlParser;
 	}
 	
@@ -40,7 +39,8 @@ public class HtmlScanner {
 		this.resourceMap = new HashMap<String, Resource>();
 		BufferedReader bufferReader = new BufferedReader(this.reader);
 		String line = bufferReader.readLine();
-		List<String> uris = new ArrayList<String>();
+		List<ReferLine> uris = new ArrayList<ReferLine>();
+		int lineNumber = 1;
 		while(line != null){
 			Matcher match = Util.SRC_TAG_PATTERN.matcher(line);
 			if (match.find()) {
@@ -51,19 +51,24 @@ public class HtmlScanner {
 					if (pieceMatch.find()) {
 						String attr  = pieceMatch.group();
 						String[] items = attr.split("=");
-						uris.add(trimQuoteRound(join(slice(items, 1), "=")));
+						uris.add(new ReferLine(lineNumber, trimQuoteRound(join(slice(items, 1), "="))));
 					}
 				}
 			}
 			line = bufferReader.readLine();
+			lineNumber ++;
 		}
 		// calculate path
 		Path path = new Path();
 		path.setParent(parent);
 		path.setRoot(root);
 		for (int i = 0; i < uris.size(); i ++) {
-			String uri = uris.get(i);
-			this.resourceMap.put(uri, Resource.parseURI(path.caculatePath(uri), uri));
+			String uri = uris.get(i).getLine();
+			Resource resource = Resource.parseURI(path.caculatePath(uri), uri);
+			if (!resource.isExisted()) {
+				System.out.println(this.html.getAbsolutePath() + " line " + uris.get(i).getLineNumber() + ": " + uri + " is not existed");
+			}
+			this.resourceMap.put(uri, resource);
 		}
 		return this.resourceMap;
 	}
@@ -105,6 +110,35 @@ public class HtmlScanner {
 			s += arr[i] + separator;
 		}
 		return s.substring(0, s.length() - separator.length());
+	}
+	
+	class ReferLine{
+		private int lineNumber;
+		
+		private String line;
+		
+		public ReferLine(){}
+		
+		public ReferLine(int lineNumber, String line){
+			this.line = line;
+			this.lineNumber = lineNumber;
+		}
+
+		public int getLineNumber() {
+			return lineNumber;
+		}
+
+		public void setLineNumber(int lineNumber) {
+			this.lineNumber = lineNumber;
+		}
+
+		public String getLine() {
+			return line;
+		}
+
+		public void setLine(String line) {
+			this.line = line;
+		}
 	}
 
 }
