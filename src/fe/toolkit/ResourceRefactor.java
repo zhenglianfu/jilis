@@ -12,9 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Administrator 璧勬簮鏂囦欢閲嶅懡鍚�
+ * @author Administrator 
  */
 public class ResourceRefactor {
+	
+	// TODO find a better way to cache the process data
+	private static Map<String, String> refactoredStampMap = new HashMap<String, String>();
+	
+	private static Map<String, Object> restoredFileMap    = new HashMap<String, Object>();    
 
 	public static final String CONNECT_CHAR = "_";
 
@@ -115,7 +120,7 @@ public class ResourceRefactor {
 		}
 		return src;
 	}
-	// 鏈熬娣诲姞鏃堕棿鎴�
+
 	private String addQuery(String src, String stamp){
 		if (src.indexOf("?") == -1) {
 			src = src + "?" + stamp;
@@ -124,7 +129,7 @@ public class ResourceRefactor {
 		}
 		return src;
 	}
-	// 鏂囦欢鏇村悕杩藉姞stamp
+
 	private String appendFileName(String src, Resource resource, String stamp){
 		String name = resource.getFileName();
 		File   file = resource.getFile();
@@ -137,7 +142,7 @@ public class ResourceRefactor {
 				+ newFileName));
 		return src;
 	}
-	// 鏂囦欢鏇村悕涓簊tamp
+
 	private String replaceName(String src, Resource resource, String stamp){
 		String name = resource.getFileName();
 		File   file = resource.getFile();
@@ -145,12 +150,18 @@ public class ResourceRefactor {
 				+ name.substring(name.lastIndexOf("."));
 		src = src.replace(name, newFileName);
 		// rename the resource 
-		file.renameTo(new File(file.getParent() + File.separator
-				+ newFileName));
+		if (!restoredFileMap.containsKey(file.getAbsolutePath())) {
+			file.renameTo(new File(file.getParent() + File.separator
+					+ newFileName));
+			restoredFileMap.put(file.getAbsolutePath(), null);
+		}
 		return src;
 	}
 	
 	private String generateStamp(File file){
+		if (refactoredStampMap.containsKey(file.getAbsolutePath())) {
+			return refactoredStampMap.get(file.getAbsolutePath());
+		}
 		String stamp = "";
 		switch (this.stampType) {
 		case ResourceRefactor.MD5_STAMP:
@@ -167,6 +178,7 @@ public class ResourceRefactor {
 		default:
 			stamp = "";
 		}
+		refactoredStampMap.put(file.getAbsolutePath(), stamp);
 		return stamp;
 	}
 

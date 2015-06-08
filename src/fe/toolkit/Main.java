@@ -1,12 +1,13 @@
 package fe.toolkit;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -202,17 +203,17 @@ public class Main {
 			target.delete();
 			target.createNewFile();
 		}
-		BufferedReader read   = new BufferedReader(new FileReader(source));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-		PrintWriter print     = new PrintWriter(writer);
-		String line = read.readLine();
-		while(null != line){
-			print.print(line + "\n");
-			line = read.readLine();
+		BufferedInputStream  in  = new BufferedInputStream(new FileInputStream(source));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(target));
+		byte[] readBuffer     = new byte[128];
+		int len = in.read(readBuffer);
+		while(len != -1){
+			out.write(readBuffer, 0, len);
+			len = in.read(readBuffer);
 		}
-		read.close();
-		print.flush();
-		print.close();
+		in.close();
+		out.flush();
+		out.close();
 		return true;
 	}
 	
