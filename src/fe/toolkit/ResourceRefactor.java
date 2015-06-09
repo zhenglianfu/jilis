@@ -75,11 +75,12 @@ public class ResourceRefactor {
 		String line = reader.readLine();
 		StringBuilder sb = new StringBuilder();
 		while (null != line) {
-			writer.print(line);
+			writer.println(line);
 			line = this.refactorSrc(line, resources) + "\n";
 			sb.append(line);
 			line = reader.readLine();
 		}
+		sb.deleteCharAt(sb.length() - 1);
 		reader.close();
 		writer.flush();
 		writer.close();

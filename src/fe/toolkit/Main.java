@@ -34,6 +34,8 @@ public class Main {
 	
 	private String[] resourceTypes;
 	
+	private String[] cssTypes;
+	
 	private String[] htmlTypes;
 	
 	public Main readProperties() throws IOException{
@@ -43,8 +45,9 @@ public class Main {
 		this.isKeepFileName = Boolean.valueOf(config.get(Configer.PROPERTIES_KEEP_FILENAME)); 
 		this.resourceTypes  = config.get(Configer.PROPERTIES_RESOURCE).split("\\|");
 		this.htmlTypes      = config.get(Configer.PROPERTIES_HTML).split("\\|");
+		this.cssTypes       = config.get(Configer.PROPERTIES_CSS).split("\\|"); 
 		this.buildDir       = config.get(Configer.PROPERTIES_PUBLIC);
-		// dir&root setting
+		// dir&root setting [classPath]
 		String classPath = (new File("")).getAbsolutePath();
 		this.root = config.get(Configer.PROPERTIES_ROOT);
 		this.dir  = config.get(Configer.PROPERTIES_DIR);
@@ -62,9 +65,9 @@ public class Main {
 	public void printResource() throws IOException{
 		BufferedWriter buffWriter = new BufferedWriter(new FileWriter(new File(this.buildDir + File.separator + "resourceRefer.json")));
 		StringBuilder sb = new StringBuilder();
-		sb.append("{\n\t");
+		sb.append("{\n");
 		for (String fileName : this.resourceMap.keySet()) {
-			sb.append("\"" + fileName.replace("\\", "/") + "\":");
+			sb.append("\t\"" + fileName.replace("\\", "/") + "\":");
 			sb.append("{");
 			for (String referName : this.resourceMap.get(fileName).keySet()) {
 				sb.append("\n\t\t\""+ referName.replace("\\", "/") + "\":");
@@ -133,6 +136,8 @@ public class Main {
 				if (filtedRefer.size() > 0) {
 					resourceMap.put(file.getAbsolutePath(), filtedRefer);
 				}
+			} else if (isCSSFile(file)) {
+				
 			}
 		}
 		return resourceMap;
@@ -159,7 +164,7 @@ public class Main {
 		File root  = new File(this.root);
 		File build = new File(this.buildDir);
 		if (!root.exists()) {
-			System.out.println("directory " + this.root + " is not exist on your device");
+			System.out.println("directory " + this.root + " is not exist on your hardware");
 			return;
 		}
 		if (!build.exists()) {
@@ -220,11 +225,22 @@ public class Main {
 	private boolean isHTMLFile(File file){
 		String fileName = file.getName();
 		String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
-		if (this.htmlTypes.length == 0) {
-			return "html".equals(fileType);
-		} else {
+		if (this.htmlTypes.length > 0) {
 			for (int i = 0; i < this.htmlTypes.length; i++) {
-				if (this.htmlTypes[i].equals(fileType)) {
+				if (this.htmlTypes[i].equalsIgnoreCase(fileType)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean isCSSFile(File file){
+		String fileName = file.getName();
+		String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
+		if (this.cssTypes.length > 0) {
+			for (int i = 0; i < this.cssTypes.length; i++) {
+				if (this.cssTypes[i].equalsIgnoreCase(fileType)) {
 					return true;
 				}
 			}

@@ -43,16 +43,10 @@ public class HtmlScanner {
 		int lineNumber = 1;
 		while(line != null){
 			Matcher match = Util.SRC_TAG_PATTERN.matcher(line);
-			if (match.find()) {
-				String piece = match.group();
-				String[] pieces = piece.split(Util.TAG_SPLIT);
-				for (int i = 0; i < pieces.length; i++) {
-					Matcher pieceMatch = Util.SRC_PATTERN.matcher(pieces[i]);
-					if (pieceMatch.find()) {
-						String attr  = pieceMatch.group();
-						String[] items = attr.split("=");
-						uris.add(new ReferLine(lineNumber, trimQuoteRound(join(slice(items, 1), "="))));
-					}
+			while (match.find()) {
+				String uri = match.group(match.groupCount());
+				if (!Util.isEmpty(uri)) {
+					uris.add(new ReferLine(lineNumber, uri.trim()));
 				}
 			}
 			line = bufferReader.readLine();
@@ -77,39 +71,6 @@ public class HtmlScanner {
 	 	if (null != this.reader) {
 	 		this.reader.close();
 	 	}
-	}
-	
-	private String trimQuoteRound(String input){
-		input = input.trim();
-		if (input.charAt(0) == '\'' || input.charAt(0) == '"') {
-			input = input.substring(1);
-		}
-		if (input.charAt(input.length() - 1) == '\'' || input.charAt(input.length() - 1) == '"') {
-			input = input.substring(0, input.length() - 1);
-		}
-		return input;
-	}
-	
-	private String[] slice(String[] arr, int start){
-		return slice(arr, start, arr.length);
-	}
-	
-	private String[] slice(String[] arr, int start, int end){
-		String[] temp = new String[Math.abs(end - start)];
-		int i = 0;
-		for (; start < end; start++) {
-			temp[i++] = arr[start];
-		}
-		return temp;
-	}
-	
-	private String join(String[] arr, String separator){
-		String s = "";
-		separator = separator == null ? "" : separator;
-		for (int i = 0; i < arr.length; i++) {
-			s += arr[i] + separator;
-		}
-		return s.substring(0, s.length() - separator.length());
 	}
 	
 	class ReferLine{

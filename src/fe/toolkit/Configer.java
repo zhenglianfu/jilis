@@ -23,6 +23,8 @@ public class Configer {
 	
 	public static final String PROPERTIES_HTML     = "html";
 	
+	public static final String PROPERTIES_CSS      = "css"; 
+	
 	public static final String PROPERTIES_KEEP_FILENAME = "keepfilename";
 	
 	private static Map<String, String> config;
