@@ -64,42 +64,14 @@ public class HtmlScanner {
 			}
 			this.resourceMap.put(uri, resource);
 		}
+		this.closeReader();
 		return this.resourceMap;
 	}
 	
-	public void closeReader() throws IOException{
+	private void closeReader() throws IOException{
 	 	if (null != this.reader) {
 	 		this.reader.close();
 	 	}
 	}
 	
-	class ReferLine{
-		private int lineNumber;
-		
-		private String line;
-		
-		public ReferLine(){}
-		
-		public ReferLine(int lineNumber, String line){
-			this.line = line;
-			this.lineNumber = lineNumber;
-		}
-
-		public int getLineNumber() {
-			return lineNumber;
-		}
-
-		public void setLineNumber(int lineNumber) {
-			this.lineNumber = lineNumber;
-		}
-
-		public String getLine() {
-			return line;
-		}
-
-		public void setLine(String line) {
-			this.line = line;
-		}
-	}
-
 }

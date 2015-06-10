@@ -29,7 +29,7 @@ public class Configer {
 	
 	private static Map<String, String> config;
 
-	public static Map<String, String> getConfig() throws IOException {
+	private static Map<String, String> init() throws IOException {
 		if (null != config) {
 			return config;
 		}
@@ -42,6 +42,20 @@ public class Configer {
 			config.put(obj.toString(), properties.get(obj).toString());
 		}
 		return config;
+	}
+	
+	public static String get(String key){
+		Map<String, String> map = new HashMap<String, String>();
+		try {
+			map = init();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String value = map.get(key);
+		if (Util.isEmpty(value)) {
+			return "";
+		}
+		return value;
 	}
 
 }

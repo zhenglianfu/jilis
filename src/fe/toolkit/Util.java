@@ -13,7 +13,7 @@ public class Util {
 			"<(link|script|img).*?\\s(href|src)=['\\\"](.*?)['\\\"]",
 			Pattern.CASE_INSENSITIVE);
 
- 	public static final Pattern CSS_URL_PATTERN = Pattern.compile("");
+ 	public static final Pattern CSS_URL_PATTERN = Pattern.compile("url\\s*\\(\\s*['\\\"]?(.*?)['\\\"]?\\s*\\)");
 	
 	public static boolean isEmpty(String s) {
 		return s == null || "".equals(s);
