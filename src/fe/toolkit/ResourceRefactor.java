@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Administrator 
+ * @author Administrator
  */
 public class ResourceRefactor {
-	
+
 	// TODO find a better way to cache the process data
 	private static Map<String, String> refactoredStampMap = new HashMap<String, String>();
-	
-	private static Map<String, Object> restoredFileMap    = new HashMap<String, Object>();    
+
+	private static Map<String, String> restoredFileMap = new HashMap<String, String>();
 
 	public static final String CONNECT_CHAR = "_";
 
@@ -67,7 +67,12 @@ public class ResourceRefactor {
 
 	public boolean refactor(String filePath, Map<String, Resource> resources)
 			throws IOException {
-		File file = new File(filePath);
+		File file = null;
+		if (restoredFileMap.containsKey(filePath)) {
+			file = new File(restoredFileMap.get(filePath));
+		} else {
+			file = new File(filePath);
+		}
 		File temp = new File(filePath + "~");
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(
@@ -102,7 +107,7 @@ public class ResourceRefactor {
 	}
 
 	private String renameSrc(String src, Resource resource) {
-		File source  = resource.getFile();
+		File source = resource.getFile();
 		String stamp = generateStamp(source);
 		if (resource.isWebSource()) {
 			src = addQuery(src, stamp);
@@ -122,7 +127,7 @@ public class ResourceRefactor {
 		return src;
 	}
 
-	private String addQuery(String src, String stamp){
+	private String addQuery(String src, String stamp) {
 		if (src.indexOf("?") == -1) {
 			src = src + "?" + stamp;
 		} else {
@@ -131,35 +136,39 @@ public class ResourceRefactor {
 		return src;
 	}
 
-	private String appendFileName(String src, Resource resource, String stamp){
+	private String appendFileName(String src, Resource resource, String stamp) {
 		String name = resource.getFileName();
-		File   file = resource.getFile();
+		File file = resource.getFile();
 		String newFileName = name.substring(0, name.lastIndexOf("."))
-				+ ResourceRefactor.CONNECT_CHAR
-				+ stamp
+				+ ResourceRefactor.CONNECT_CHAR + stamp
 				+ name.substring(name.lastIndexOf("."));
 		src = src.replace(name, newFileName);
-		file.renameTo(new File(file.getParent() + File.separator
-				+ newFileName));
-		return src;
-	}
-
-	private String replaceName(String src, Resource resource, String stamp){
-		String name = resource.getFileName();
-		File   file = resource.getFile();
-		String newFileName = stamp
-				+ name.substring(name.lastIndexOf("."));
-		src = src.replace(name, newFileName);
-		// rename the resource 
+		// rename the resource
 		if (!restoredFileMap.containsKey(file.getAbsolutePath())) {
-			file.renameTo(new File(file.getParent() + File.separator
-					+ newFileName));
-			restoredFileMap.put(file.getAbsolutePath(), null);
+			String newPath = file.getParent() + File.separator + newFileName;
+			restoredFileMap.put(file.getAbsolutePath(), newPath);
+			file.renameTo(new File(newPath));
 		}
 		return src;
 	}
-	
-	private String generateStamp(File file){
+
+	private String replaceName(String src, Resource resource, String stamp) {
+		String name = resource.getFileName();
+		File file = resource.getFile();
+		String newFileName = stamp
+				+ (Util.isEmpty(resource.getFileType()) ? "" : "."
+						+ resource.getFileType());
+		src = src.replace(name, newFileName);
+		// rename the resource
+		if (!restoredFileMap.containsKey(file.getAbsolutePath())) {
+			String newPath = file.getParent() + File.separator + newFileName;
+			restoredFileMap.put(file.getAbsolutePath(), newPath);
+			file.renameTo(new File(newPath));
+		}
+		return src;
+	}
+
+	private String generateStamp(File file) {
 		if (refactoredStampMap.containsKey(file.getAbsolutePath())) {
 			return refactoredStampMap.get(file.getAbsolutePath());
 		}

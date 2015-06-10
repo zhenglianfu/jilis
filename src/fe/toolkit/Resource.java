@@ -80,7 +80,7 @@ public class Resource {
 		resource.file = new File(absUri);
 		int slashIndex = absUri.lastIndexOf("/") == -1 ? 0 : absUri
 				.lastIndexOf("/");
-		resource.fileType    = absUri.substring(absUri.lastIndexOf(".") + 1);
+		resource.fileType    = absUri.lastIndexOf(".") == -1 ? "" : absUri.substring(absUri.lastIndexOf(".") + 1);
 		resource.fileName    = absUri.substring(slashIndex + 1);
 		resource.isWebSource = absUri.toLowerCase().indexOf("http://") == 0;
 		if (resource.isWebSource) {
