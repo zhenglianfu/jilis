@@ -4,3 +4,6 @@
 - nodeJS版 [bilis](http://zhenglianfu/bilis)
 - Python版 pilis
 - C版 cilis 
+
+jilis核心代码branch
+后续开发将继续在master中
